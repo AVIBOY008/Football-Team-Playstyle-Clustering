@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Playstyle Analyzer Dashboard</title>
+    <!-- Include premium style sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Load Chart.js for radar/bar charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load Plotly.js for interactive 2D/3D clusters -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <!-- SVG Soccer Ball Icon -->
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        <path d="M2 12h20M12 2v20" />
+                    </svg>
+                </div>
+                <div class="brand-name">Tactical AI</div>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li>
+                        <a class="nav-item active" data-tab="overview">
+                            <!-- SVG Grid/Overview Icon -->
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                            Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" data-tab="team-analysis">
+                            <!-- SVG Users/Team Icon -->
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            Team Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" data-tab="prediction">
+                            <!-- SVG Cpu/Prediction Icon -->
+                            <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>
+                            Predictor
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" data-tab="simulation">
+                            <!-- SVG Activity/Simulator Icon -->
+                            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            Simulator
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item" data-tab="clusters">
+                            <!-- SVG Scatter/Cluster Icon -->
+                            <svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"/><circle cx="12" cy="12" r="3"/><circle cx="8" cy="9" r="1.5"/><circle cx="16" cy="15" r="1.5"/><circle cx="15" cy="9" r="1.5"/><circle cx="9" cy="15" r="1.5"/></svg>
+                            Tactical Clusters
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="footer-profile">
+                    <div class="profile-avatar">AI</div>
+                    <div class="profile-info">
+                        <h4>AURA Football Engine</h4>
+                        <p>v2.1.0 Active</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Dashboard Viewport -->
+        <main class="main-content">
+            
+            <!-- OVERVIEW VIEW -->
+            <section id="overview" class="tab-view active">
+                <div class="view-header">
+                    <h1 class="view-title">Tactical Dataset Overview</h1>
+                    <p class="view-subtitle">High-level insights into national team performance baselines and global playstyle distributions.</p>
+                </div>
+                
+                <!-- Metrics row -->
+                <div class="metrics-grid">
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="metric-info">
+                            <p>Analyzed Teams</p>
+                            <div class="metric-val" id="metric-teams">-</div>
+                        </div>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                        </div>
+                        <div class="metric-info">
+                            <p>Global Avg Passes</p>
+                            <div class="metric-val" id="metric-passes">-</div>
+                        </div>
+                    </div>
+                    <div class="glass-card metric-card">
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div class="metric-info">
+                            <p>Global Avg PPDA</p>
+                            <div class="metric-val" id="metric-ppda">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Distribution & Raw Data -->
+                <div class="panels-grid">
+                    <div class="glass-card panel-col-12" style="margin-bottom: 1.5rem;">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Playstyle Distribution</h3>
+                        </div>
+                        <div style="height: 320px; position: relative;">
+                            <canvas id="playstyle-distribution-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card panel-col-12">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Raw Dataset Explorer</h3>
+                        </div>
+                        
+                        <!-- Search & Paginate Control -->
+                        <div class="table-controls">
+                            <div class="search-wrapper">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input type="text" id="table-search" class="search-input" placeholder="Search by team or playstyle...">
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="page-btn" id="prev-page" disabled>&lt;</button>
+                                <span class="page-info" id="page-indicator">Page 1 of 1</span>
+                                <button class="page-btn" id="next-page" disabled>&gt;</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Main interactive Table -->
+                        <div class="table-wrapper">
+                            <table class="data-table" id="raw-data-table">
+                                <thead>
+                                    <tr>
+                                        <th data-column="team">Team</th>
+                                        <th data-column="playstyle">Playstyle</th>
+                                        <th data-column="passes">Passes</th>
+                                        <th data-column="shots">Shots</th>
+                                        <th data-column="average_pass_length">Avg Pass Length</th>
+                                        <th data-column="xg_per_shot">xG/Shot</th>
+                                        <th data-column="ppda">PPDA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic elements filled via Javascript -->
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading raw dataset explorer data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- TEAM PROFILE VIEW -->
+            <section id="team-analysis" class="tab-view">
+                <div class="view-header">
+                    <h1 class="view-title">Team Profile Analysis</h1>
+                    <p class="view-subtitle">Drill down into individual team metrics and compare their profile against MinMax normalized baselines.</p>
+                </div>
+                
+                <div class="form-group" style="max-width: 400px; margin-bottom: 2.5rem;">
+                    <label class="form-label" for="team-selector">Select Team to Inspect</label>
+                    <select id="team-selector" class="custom-select">
+                        <option value="" disabled selected>Loading teams list...</option>
+                    </select>
+                </div>
+                
+                <div class="panels-grid">
+                    <!-- Left Stats list -->
+                    <div class="glass-card panel-col-4">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Key Stat Metrics</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;" id="team-stats-container">
+                            <div style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
+                                Choose a team above to display key metrics
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Radar Chart -->
+                    <div class="glass-card panel-col-8">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Playstyle Radar Coordinates</h3>
+                        </div>
+                        <div style="height: 380px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <canvas id="team-radar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PREDICTION VIEW -->
+            <section id="prediction" class="tab-view">
+                <div class="view-header">
+                    <h1 class="view-title">Playstyle Predictor</h1>
+                    <p class="view-subtitle">Input raw match metrics to dynamically scale and classify the team playstyle using the trained KNN model.</p>
+                </div>
+                
+                <div class="panels-grid">
+                    <!-- Sliders panel -->
+                    <div class="glass-card panel-col-6">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Feature Inputs</h3>
+                        </div>
+                        <form id="prediction-form" onsubmit="event.preventDefault();">
+                            <div class="form-group">
+                                <label class="form-label" for="slider-passes">Passes: <span class="value-badge" id="val-passes">400</span></label>
+                                <input type="range" class="custom-slider" id="slider-passes" min="200" max="800" value="400">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-shots">Shots: <span class="value-badge" id="val-shots">10</span></label>
+                                <input type="range" class="custom-slider" id="slider-shots" min="0" max="30" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-pass-len">Avg Pass Length (m): <span class="value-badge" id="val-pass-len">20m</span></label>
+                                <input type="range" class="custom-slider" id="slider-pass-len" min="0" max="30" value="20">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-carries">Carries: <span class="value-badge" id="val-carries">300</span></label>
+                                <input type="range" class="custom-slider" id="slider-carries" min="100" max="700" value="300">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-ppda">PPDA: <span class="value-badge" id="val-ppda">5.00</span></label>
+                                <input type="range" class="custom-slider" id="slider-ppda" min="0.5" max="20" step="0.1" value="5.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-xg">xG per Shot: <span class="value-badge" id="val-xg">1.00</span></label>
+                                <input type="range" class="custom-slider" id="slider-xg" min="0.0" max="5.0" step="0.1" value="1.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-deep">Angle Deep: <span class="value-badge" id="val-deep">0.01</span></label>
+                                <input type="range" class="custom-slider" id="slider-deep" min="-1.0" max="1.0" step="0.01" value="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-mid">Angle Mid: <span class="value-badge" id="val-mid">0.01</span></label>
+                                <input type="range" class="custom-slider" id="slider-mid" min="-1.0" max="1.0" step="0.01" value="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="slider-final">Angle Final: <span class="value-badge" id="val-final">0.01</span></label>
+                                <input type="range" class="custom-slider" id="slider-final" min="-1.0" max="1.0" step="0.01" value="0.01">
+                            </div>
+                            <button type="button" class="custom-btn" id="predict-btn">
+                                <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                                Predict Playstyle
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Result panel -->
+                    <div class="glass-card panel-col-6" style="position: relative;">
+                        <!-- Loader overlay -->
+                        <div class="loader-overlay" id="prediction-loader">
+                            <div class="spinner"></div>
+                            <div class="loading-text">Analyzing tactics...</div>
+                        </div>
+                        
+                        <div class="panel-header">
+                            <h3 class="panel-title">Model Prediction Output</h3>
+                        </div>
+                        
+                        <div class="result-container" id="prediction-result-container">
+                            <div class="result-placeholder-icon">🤖</div>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Configure the inputs on the left and run classification prediction to view tactical model outputs.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SIMULATION VIEW -->
+            <section id="simulation" class="tab-view">
+                <div class="view-header">
+                    <h1 class="view-title">Match Playstyle Simulator</h1>
+                    <p class="view-subtitle">Generate simulated match statistics using Gaussian Kernel Density Estimation (KDE) over match histories.</p>
+                </div>
+                
+                <div class="panels-grid">
+                    <!-- Simulator Settings Panel -->
+                    <div class="glass-card panel-col-4">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Simulation Target</h3>
+                        </div>
+                        
+                        <div class="pill-selector">
+                            <div class="pill-option active" data-mode="Generic (All Teams)">Generic (All)</div>
+                            <div class="pill-option" data-mode="Specific Team">Specific Team</div>
+                        </div>
+                        
+                        <div class="form-group" id="sim-team-group" style="display: none;">
+                            <label class="form-label" for="sim-team-selector">Select Team to Simulate</label>
+                            <select id="sim-team-selector" class="custom-select">
+                                <!-- Loaded via JS -->
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="custom-btn" id="simulate-btn">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Generate Simulated Match
+                        </button>
+                    </div>
+                    
+                    <!-- Simulator Result Panel -->
+                    <div class="glass-card panel-col-8" style="position: relative; min-height: 450px;">
+                        <!-- Loader overlay -->
+                        <div class="loader-overlay" id="simulation-loader">
+                            <div class="spinner"></div>
+                            <div class="loading-text">Generating simulation and computing playstyle...</div>
+                        </div>
+                        
+                        <div class="panel-header">
+                            <h3 class="panel-title">Simulation Output</h3>
+                        </div>
+                        
+                        <div id="sim-output-container">
+                            <div class="result-container">
+                                <div class="result-placeholder-icon">🎲</div>
+                                <p style="color: var(--text-muted); font-size: 0.95rem;">Trigger a match simulation to generate KDE-sampled metrics and playstyle predictions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- CLUSTERS VIEW -->
+            <section id="clusters" class="tab-view">
+                <div class="view-header">
+                    <h1 class="view-title">Tactical Playstyle Clusters</h1>
+                    <p class="view-subtitle">High-dimensional team metrics projected into 2D and 3D PCA coordinates to reveal spatial groupings.</p>
+                </div>
+                
+                <div class="panels-grid">
+                    <!-- 2D View -->
+                    <div class="glass-card panel-col-6">
+                        <div class="panel-header">
+                            <h3 class="panel-title">2D PCA Cluster Projection</h3>
+                        </div>
+                        <div id="plotly-2d-container" style="height: 480px; width: 100%;"></div>
+                    </div>
+                    
+                    <!-- 3D View -->
+                    <div class="glass-card panel-col-6">
+                        <div class="panel-header">
+                            <h3 class="panel-title">3D PCA Cluster Projection</h3>
+                        </div>
+                        <div id="plotly-3d-container" style="height: 480px; width: 100%;"></div>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+    
+    <!-- Include premium Javascript application -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
