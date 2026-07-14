@@ -135,12 +135,12 @@ python app.py
 
 ## 📷 Screenshots
 
-Add screenshots of:
+<img width="1892" height="913" alt="Screenshot 2026-07-14 201723" src="https://github.com/user-attachments/assets/0b5275ae-d7e9-4f0b-a275-a5a496e5876d" />
+<img width="1557" height="737" alt="Screenshot 2026-07-14 201831" src="https://github.com/user-attachments/assets/b9598c32-7aab-497f-a465-9ebfe9eb262a" />
+<img width="1512" height="870" alt="Screenshot 2026-07-14 201845" src="https://github.com/user-attachments/assets/0ceba232-90a2-42b4-8067-5b990dbcf29c" />
 
-- Dashboard
-- Cluster Visualization
-- Distribution Plots
-- Model Results
+
+
 
 ---
 
